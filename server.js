@@ -6,6 +6,8 @@ const bodyParser = require('body-parser');
 const db = require('./lib/db');
 const bcrypt = require('bcrypt');
 const sessionOption = require('./lib/sessionOption');
+require("dotenv").config();
+
 
 var MySQLStore = require('express-mysql-session')(session);
 var sessionStore = new MySQLStore(sessionOption);
@@ -162,7 +164,7 @@ app.post("/getCandidate", async(req, res) => {
 
 app.post('/api/vote', (req, res) => {
     const {pollId, choice } = req.body;
-    const secretKey = "00000000000000000000000000000000"; // process.env.ENCRYPTION_SECRET;
+    const secretKey = process.env.ENCRYPTION_SECRET; // process.env.ENCRYPTION_SECRET;
     const encryptedChoice = encrypt(choice, secretKey);// 투표 데이터 암호화
     const voteHash = calculateHash(choice + secretKey);// 투표 결과 해시 계산
 
@@ -313,7 +315,7 @@ app.get("/api/polls/result", (req, res) => {
                         // 500
                         console.log(e);
                     } else {
-                        const secretKey = '00000000000000000000000000000000';
+                        const secretKey = process.env.ENCRYPTION_SECRET;
                         const choices = r.map(vote => {
                             const encryptedChoice = vote.encrypted_choice;
                             const storedHash = vote.hash;
